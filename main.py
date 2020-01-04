@@ -24,3 +24,5 @@ for img in os.listdir(imgDir):
     file_path = imgDir+"/"+img
     if "front" in img:
         print(frontDetect(file_path,False))
+    elif "back" in img:
+        print(backDetect(file_path,False))
