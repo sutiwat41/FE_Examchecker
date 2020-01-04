@@ -5,7 +5,7 @@ from math import*
 from config import*
 from modifydat import*
 
-file_name = "research/"+"calibate__12.jpg"
+file_name = "imageInput/"+"205-12-bug.jpg"
 
 img = cv2.imread(file_name)
 
@@ -27,6 +27,8 @@ rec_list = list() #reference
 cir_list = list()
 
 imgcont = img1.copy()
+imgid = img1.copy()
+
 for cnt in contours:
     approx = cv2.approxPolyDP(cnt, .035 * cv2.arcLength(cnt, True), True)
     #print(len(approx),end=" ")
@@ -40,6 +42,13 @@ for cnt in contours:
 
             rec_list.append([cx,cy])
             cv2.drawContours(imgcont,[cnt],0,(100,255,0),-1)
+        elif 80000<area<100000: 
+            cv2.drawContours(imgid,[cnt],0,(100,255,0),2)
+            
+            tmpX = [ e[0][0] for e in approx]
+            tmpY = [ e[0][1] for e in approx]
+            imgid = imgid[min(tmpY)+34:max(tmpY),min(tmpX):max(tmpX) ]
+
         
     elif 5<=len(approx):
         area = cv2.contourArea(cnt)
@@ -53,12 +62,26 @@ for cnt in contours:
             #print(total,area,radius)
             cv2.circle(imgcont, (cx, cy),radius, (50, 100, 0), 2)
             #cv2.drawContours(imgcont, [cnt], 0, (50,100,0), -1)
+imgid,contours3, hierarchy3 = cv2.findContours(imgid.copy(), cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+for cnt in contours3:
+    approx = cv2.approxPolyDP(cnt, .035 * cv2.arcLength(cnt, True), True)
+    if 5<=len(approx):
+        area = cv2.contourArea(cnt)
+        (cx, cy), radius = cv2.minEnclosingCircle(cnt)
+        circleArea = radius * radius * np.pi
+        print("(cx,cy) = {:.3f},{:.3f} area = {:.3f} CirArea = {:.3f}".format(cx,cy,area,circleArea))
+        if 300 <=circleArea <= 800 :
+  
+            cx,cy,radius = int(cx),int(cy),int(radius)
+            cir_list.append([cx,cy,area,radius])
+            cv2.circle(imgid, (cx, cy),radius, (50, 100, 0), 2)
+
 
 plt.figure(1)
 plt.imshow(imgcont)
 
-#plt.figure(2)
-#plt.imshow(erosion)
+plt.figure(2)
+plt.imshow(imgid)
 
 plt.figure(3)
 plt.imshow(thresh)

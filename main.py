@@ -1,6 +1,8 @@
 from reg import *
 from config import*
 from academic import Key
+from detectAns import*
+import os
 
 #------ set up file ------#
 
@@ -17,3 +19,8 @@ keydf.grantData()
 
 
 #------- grant answer -------#
+
+for img in os.listdir(imgDir):
+    file_path = imgDir+"/"+img
+    if "front" in img:
+        print(frontDetect(file_path,False))

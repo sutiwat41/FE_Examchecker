@@ -1,6 +1,6 @@
 #directory config
-reqFileDir = "require file"
-
+reqFileDir = "require file"  #All document : register,key
+imgDir ="imageInput"         #image of Answer
 
 #-------  Question section config -------#
 partDep = [0]*6

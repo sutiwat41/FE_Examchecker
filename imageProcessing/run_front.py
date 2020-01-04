@@ -26,6 +26,7 @@ erosion = cv2.erode(thresh1,kernel,iterations = 3)
 img1,contours, hierarchy = cv2.findContours(thresh1.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 img2,contours2, hierarchy2 = cv2.findContours(erosion.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
+imgid = img1.copy()
 imgcont = img1.copy()
 for cnt in contours:
     approx = cv2.approxPolyDP(cnt, .035 * cv2.arcLength(cnt, True), True)
@@ -41,7 +42,12 @@ for cnt in contours:
             #print("square , Area = ",area,"(x,y) =",(cx,cy))
             rec_list.append([cx,cy])#,area,perim])
             cv2.drawContours(imgcont,[cnt],0,(100,255,0),-1)
-        
+        elif 80000<area<100000: 
+            cv2.drawContours(imgid,[cnt],0,(100,255,0),2)
+            tmpX = [ e[0][0] for e in approx]
+            tmpY = [ e[0][1] for e in approx]
+            imgid = imgid[min(tmpY)+34:max(tmpY),min(tmpX):max(tmpX) ]
+
     elif 5<=len(approx):
         area = cv2.contourArea(cnt)
         (cx, cy), radius = cv2.minEnclosingCircle(cnt)
@@ -153,4 +159,4 @@ plt.imshow(erosion)
 
 plt.figure(3)
 plt.imshow(img)
-plt.show()
+plt.show()  
