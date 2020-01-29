@@ -17,4 +17,6 @@ class Reg:
         #create regData -> key : student id 
         #                 item : Reg Data 
         for col in rawData.values:
-            self.regData[col[0]] = list(col[1:])
+            id = int(col[0])
+            #print(id)
+            self.regData[id] = list(col[1:])

@@ -5,7 +5,7 @@ from math import*
 from config import*
 from modifydat import*
 
-file_name = "imageProcessing/research/"+"calibate__12.jpg"
+file_name = "imageInput/"+"front/front-3204 (7).jpg"
 
 img = cv2.imread(file_name)
 

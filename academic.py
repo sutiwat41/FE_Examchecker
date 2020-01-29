@@ -1,5 +1,6 @@
 from reqlib import* 
 from config import*
+from tqdm import tqdm
 class Key:
     #key of exam
     def __init__(self,file):
@@ -15,10 +16,10 @@ class Key:
         
         for col in self.data.columns:
             self.val[col] = self.data[col].values[0]
-            name = self.data[col].values[1]
+            """name = self.data[col].values[1]
             if name not in self.Examiner: 
                 self.Examiner[name] = [col] 
-            else: self.Examiner[name].append(col)
+            else: self.Examiner[name].append(col)"""
 
 class Answer:
     #Answer of exam
@@ -38,31 +39,52 @@ class Answer:
 
         return self.ansDict  
 
-def grading(keyDict,ansDict):
+def grading(keyDict,ansDict,progressBar):
     #return score for each question + sum score
     #return score for each part + sum score
     scoreDict = dict()
-    scoreSumDict = dict()
+    scorePartDict = dict()
     scoreSum = 0
-    for id in ansDict.keys():
+    if progressBar: runDict = tqdm(ansDict.keys())
+    else: runDict = ansDict.keys()
+    for id in runDict:
+        #print(id)
+        nonBug =True
         outlist = [0]*70
-        partsc  = [0]*6 
+        partsc  = [0]*numPart 
         for i in range(70):
+            #print(ansDict[id][i],i)
+            if i>=60:
+                if checkZero:
+                    if type(ansDict[id][i]) == "str" and "-" in ansDict[id][i] : 
+                        ansDict[id][i] = "-"
+                else:
+                    if type(ansDict[id][i]) == "str":
+                        ansDict[id][i] = ansDict[id][i].replace("-","0")
             if keyDict[i+1].values[0] == "free":
                 if i < 60: outlist[i] = 4
                 else: outlist[i] = 6 
-            elif str(ansDict[id][i]).strip() == "ไม่ตอบ"  or str(ansDict[id][i]).strip() in 'xXcCz-': 
+            elif "ไม่" in str(ansDict[id][i]).strip() or str(ansDict[id][i]).strip() == "ไม่ตอบ"  or str(ansDict[id][i]).strip() in 'xXcCz-' or 'x' in str(ansDict[id][i]).lower(): 
                 outlist[i] = 0
+            elif '*' in str(ansDict[id][i]):
+                nonBug = False
+                break
             elif float(ansDict[id][i]) == float(keyDict[i+1].values[0]):
                 if i < 60: outlist[i] = 4
                 else: outlist[i] = 6 
-                
-    for i,p in enumerate(QuesPart):
-        for e in p:
-            partsc[i] = sum(outlist[e[0]-1:e[1]])
 
-    scoreSum = sum(outlist)
-    scoreDict[id] = outlist+[scoreSum] 
-    scoreSumDict[id] = partsc+[scoreSum]
+        if nonBug:         
+            for i,p in enumerate(QuesPart):
+                for e in p:
+                    if len(e) == 1 : partsc[i] += outlist[e[0]-1]
+                    else: partsc[i] += sum(outlist[e[0]-1:e[1]])
+            scoreSum = sum(outlist)
+        else:
+            scoreSum = "Bug"
+            for i,p in enumerate(QuesPart):partsc[i] = "*"
+        
+        scoreDict[id] = outlist+[scoreSum] 
+        scorePartDict[id] = partsc+[scoreSum,round(scoreSum/fullScore*100,2)]
+        
 
-    return scoreDict,scoreSumDict
+    return scoreDict,scorePartDict

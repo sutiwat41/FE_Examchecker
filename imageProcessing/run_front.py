@@ -9,7 +9,7 @@ rec_list = list() #reference
 cir_list = list()
 Anscir_list = list()
 
-fileName = "imageInput/"+"205-12-bug.jpg"
+fileName = "imageInput/"+"204-10-front.jpg"
 img = cv2.imread(fileName)
 img = cv2.resize(img,(width,height),interpolation=cv2.INTER_AREA)
 
@@ -28,6 +28,7 @@ img2,contours2, hierarchy2 = cv2.findContours(erosion.copy(), cv2.RETR_EXTERNAL,
 
 imgid = img1.copy()
 imgcont = img1.copy()
+startX,startY  = 0,0
 for cnt in contours:
     approx = cv2.approxPolyDP(cnt, .035 * cv2.arcLength(cnt, True), True)
     #print(len(approx),end=" ")

@@ -6,7 +6,8 @@ from config import*
 from modifydat import*
 
 def frontDetect(fileName,display):
-    #return dict -> id : Ans 1 - 60
+    #fileName (image) | display -> image :True, False
+    #return  id , Ans 1 - 60
 
     rec_list = list() #reference
     cir_list = list()
@@ -37,6 +38,7 @@ def frontDetect(fileName,display):
         if len(approx)==4:
             area = cv2.contourArea(cnt)
             perim = cv2.arcLength(cnt,True)
+            x,y,w,h = cv2.boundingRect(approx)
             if rec_LB <= area <= rec_UB and perim/area<=1:
                 M = cv2.moments(cnt) 
                 cx = round(M["m10"] / M["m00"],3)
@@ -44,7 +46,7 @@ def frontDetect(fileName,display):
 
                 rec_list.append([cx,cy])#,area,perim])
                 cv2.drawContours(imgcont,[cnt],0,(100,255,0),-1)
-            elif 80000<area<100000: 
+            elif 70000<area<110000 and w < h :  
                 cv2.drawContours(imgcont,[cnt],0,(100,255,0),5)
                 tmpX = [ e[0][0] for e in approx]
                 tmpY = [ e[0][1] for e in approx]
@@ -89,12 +91,14 @@ def frontDetect(fileName,display):
                 #cv2.circle(imgid, (cx-startX, cy-startY),radius, (50, 100, 0), 2)
                 #cv2.circle(imgcont, (cx, cy+34),radius, (50, 100, 0), 2)
 
-
+    
     #---------- Sort Coordinate : top-left ----------#
     rec_list = sort_coor(rec_list)
     cir_list = sort_coor(cir_list)
     Anscir_list = sort_coor(Anscir_list)
     cir_id_list = sort_coor(cir_id_list)
+
+    
     #---------- Set Boundry : For read ID ----------#
     coor_trans = [ [[-80,20]],[[-345,20]],[[-345,340]],[[-80,340]]]
     coor = np.array(coor_trans)+np.array([[rec_list[0]]]*4,dtype = int)
@@ -102,7 +106,7 @@ def frontDetect(fileName,display):
 
     #---------- Set Boundry : For read Answer of Question ----------#
     coor_order = [2,5,3,6,1,4]
-    coor_trans_q= [[[-10,10]],[[-170,10]],[[-170,340]],[[-10,340]]]
+    coor_trans_q= [[[-10,10]],[[-160,10]],[[-160,330]],[[-10,330]]]
     coor_q = list()
     for j,e in enumerate(coor_order):
         coor_q.append(np.array(coor_trans_q)+np.array([[rec_list[e]]]*4,dtype = int))
@@ -112,7 +116,7 @@ def frontDetect(fileName,display):
     id_list = list()
     ans_list = [[] for e in range(6)]
     studentAns = ['-']*60
-    id = [0]*9
+    id = ['*']*9
     for e in Anscir_list:
         if e[0] <= coor[0][0][0] and e[0] >= coor[1][0][0] and e[1] <= coor[2][0][1] and e[1] >= coor[1][0][1]:
             id_list.append(e)
@@ -130,6 +134,7 @@ def frontDetect(fileName,display):
             CX,CY = cir_id_list[i+1][:2]
             if (X-CX)**2+(Y-CY)**2 <= R**2:
                 cir_id_list.pop(i)
+    
     for e in cir_id_list:
         if e[0] <= coor[0][0][0] and e[0] >= coor[1][0][0] and e[1] <= coor[2][0][1] and e[1] >= coor[1][0][1]:
             #print(e)
@@ -142,6 +147,7 @@ def frontDetect(fileName,display):
                 id_list = id_list[1:]
             cv2.circle(imgcont, (cx, cy+34),radius, (50, 100, 0), 2)  
             c+=1
+    
     for e in cir_list:
         for i in range(len(coor_order)):  
             check = e[0] <= coor_q[i][0][0][0] and e[0] >= coor_q[i][1][0][0] and e[1] <= coor_q[i][2][0][1] and e[1] >= coor_q[i][1][0][1]
@@ -160,13 +166,15 @@ def frontDetect(fileName,display):
                         studentAns[i*10+ind[i]//5] = str(ind[i]%5+1)
                     else: 
                         studentAns[i*10+ind[i]//5] ='X'
-                        #print("Bug : double choose at",i*10+ind[i]//5+1)
+
                     #dequeue
                     ans_list[i] = ans_list[i][1:]
                 ind[i]+=1
     #print(id,studentAns)
+    #print(id)
+    
     id = "".join(id)
-    return {id:studentAns}
+    return {"id":id,"ans":studentAns}
 
 
 def backDetect(fileName,display):
@@ -223,6 +231,7 @@ def backDetect(fileName,display):
                 cv2.drawContours(imgcont,[approx],0,(100,255,0),5)
 
     cir_list_temp = [[] for e in range(10)]
+    
     rec_list = sort_coor(rec_list)
     recBound = [e[2] for e in rec_list ]
     for cnt in contours2:
@@ -244,7 +253,7 @@ def backDetect(fileName,display):
                 #cv2.circle(thresh2, (cx, cy),radius, (100, 255, 0), 2)
     #print([len(e) for e in cir_list_temp])
 
-
+   
     cir_list = sort_coor(cir_list)
 
     Anscir_list = [[] for e in range(10)]
@@ -256,7 +265,7 @@ def backDetect(fileName,display):
             (cx, cy), radius = cv2.minEnclosingCircle(cnt)
             circleArea = radius * radius * np.pi
             #print("(cx,cy) = {:.3f},{:.3f} area = {:.3f} CirArea = {:.3f}".format(cx,cy,area,circleArea))
-            if 100 <=circleArea <= 200 :
+            if 80 <=circleArea <= 250 :
                 #print(circleArea)
                 cx,cy,radius = int(cx),int(cy),int(radius)
                 
@@ -276,6 +285,12 @@ def backDetect(fileName,display):
                     cir_list_temp[j].pop(i+1)
         Anscir_list[j] = sort_coor(Anscir_list[j])
     #print([len(e) for e in cir_list_temp])
+
+    #---------- Detect circle number  ----------#
+    for e in cir_list_temp:
+        if len(e) != 60:
+            return "Bug : Circle less than 60 for Part2"
+
     ans_list = list(Anscir_list)
     ind = [0]*10
     studentAnsWrite = [["-"]*6 for e in range(10)] 
@@ -296,7 +311,7 @@ def backDetect(fileName,display):
                         studentAnsWrite[i][ind[i]%6] = str(ind[i]//6)
                     else: 
                         studentAnsWrite[i][ind[i]%6] ='X'
-                        print("Bug : double choose at")
+                        #print("Bug : double choose at",i)
                     ans_list[i] = ans_list[i][1:]
                 ind[i]+=1
                 #break

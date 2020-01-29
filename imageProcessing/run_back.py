@@ -5,7 +5,7 @@ from math import*
 from config import*
 from modifydat import*
 
-file_name = "research/"+"File02.png"
+file_name = "imageInput/"+"Document 16_5.jpg"
 
 img = cv2.imread(file_name)
 img = cv2.resize(img,(width,height),interpolation=cv2.INTER_AREA)

@@ -1,17 +1,21 @@
 #directory config
 reqFileDir = "require file"  #All document : register,key
 imgDir ="imageInput"         #image of Answer
-
+outputDir = "output file"
+#------- Condition config -------#
+checkZero = False   # True for detect Zero before Answer
+fullScore = 300
 #-------  Question section config -------#
-partDep = [0]*6
-partDepHead = ["กลศาสตร์","ไฟฟ้า","คลื่น และ ความถนัดทางวิศวกรรม","สมบัติสาร","เคมี","คณิตศาสตร์"]
-partDep[0] = "1-10,61-62"   #กลศาสตร์
-partDep[1] = "11-18,63-64"  #ไฟฟ้า
-partDep[2] = "19-20,51-60"  #คลื่น และ ความถนัดทางวิศวกรรม
-partDep[3] = "21-29,65-66"  #สมบัติสาร
-partDep[4] = "30-39,67-68"  #เคมี
-partDep[5] = "40-50,69-70"  #คณิตศาสตร์
-
+partDep = [0]*7
+partDepHead = ["กลศาสตร์","ไฟฟ้า","คลื่น","ความถนัดทางวิศวกรรม","สมบัติสาร","เคมี","คณิตศาสตร์"]
+partDep[0] = "1-9,21,61-62"   #กลศาสตร์
+partDep[1] = "10-16,63-64"  #ไฟฟ้า
+partDep[2] = "17-20"  #คลื่น 
+partDep[3] = "19-20,51-60"  #ความถนัดทางวิศวกรรม
+partDep[4] = "22-28,65-67"  #สมบัติสาร
+partDep[5] = "29-36"  #เคมี
+partDep[6] = "37-48,69-70"  #คณิตศาสตร์
+numPart = len(partDep)
 QuesPart = []
 for e in partDep:
     tempLis = []
@@ -28,14 +32,14 @@ height = 1535
 #config_threshold
 #decrease threshold for add darkness 
 #increase threshold for add brightness
-min_threshold = 235 #210 
-max_threshold = 255 #255
+min_threshold = 200 #210 
+max_threshold = 210 #255
 
-minThreshBackRec = 215
-maxThreshBackRec = 250
+minThreshBackRec = 215  #215
+maxThreshBackRec = 250  #250
 
-minThreshBackCir = 140
-maxThreshBackCir = 160
+minThreshBackCir = 140 #140
+maxThreshBackCir = 160  #160
 
 rec_LB = 190
 rec_UB = 600
