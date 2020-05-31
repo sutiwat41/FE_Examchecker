@@ -8,7 +8,6 @@ from modifydat import*
 file_name = "imageInput/"+"205-12-front.jpg"
 
 img = cv2.imread(file_name)
-
 img = cv2.resize(img,(width,height),interpolation=cv2.INTER_AREA)
 
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

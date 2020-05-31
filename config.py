@@ -1,7 +1,7 @@
 #directory config
 reqFileDir = "require file"  #All document : register,key
-imgDir ="imageInput"         #image of Answer
-outputDir = "output file"
+imgDir     = "imageInput"         #image of Answer
+outputDir  = "output file"
 #------- Condition config -------#
 checkZero = False   # True for detect Zero before Answer
 fullScore = 300

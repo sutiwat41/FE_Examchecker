@@ -10,7 +10,7 @@ from detectAns import*
 reg_file = reqFileDir+ "/reg_2020FEST.xlsx"
 key_file = reqFileDir+ "/key_2020FEST.xlsx"
 ans_xlsx_file = reqFileDir+"/answerfile.xlsx"
-score_xlsx_file = outputDir+"/scoreFEST2020.xlsx"
+score_xlsx_file = outputDir+"/scoreFEST2020_NEW3.xlsx"
 
 #------ grant reg data ------#
 regDa = Reg(reg_file)
@@ -26,9 +26,16 @@ ansexcel = pd.read_excel(ans_xlsx_file)
 ans_col = ansexcel.columns.values
 ind = list(ans_col).index('รหัสประจำตัวสอบ')
 ind_1 = list(ans_col).index('ข้อที่ 1')
-for i in ansexcel.get_values():
-	AnsDict[i[ind]] = list(i[ind_1:ind_1+70])
 
+tempAnsDict = ansexcel
+tempAnsDict=tempAnsDict.set_index('รหัสประจำตัวสอบ')
+idTemp = list(tempAnsDict.index)
+tempAnsDict = tempAnsDict.to_numpy()
+
+for v,id in enumerate(idTemp):
+    AnsDict[id] = list(tempAnsDict[v][ind_1-1:])
+    print(len(AnsDict[id]),AnsDict[id])
+#print(AnsDict)
 #------- grading -------#
 print("Grading :")
 totalScore,totalScorePart = grading(keydf.data,AnsDict,True)

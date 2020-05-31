@@ -32,10 +32,15 @@ class Answer:
         # creat Examiner : collect No. question 
         ansDf = pd.read_excel(self.filename)
         ans_col = ansDf.columns.values
-        ind = list(ans_col).index('รหัสประจำตัวสอบ')
         ind_1 = list(ans_col).index('ข้อที่ 1')
-        for i in ansDf.get_values():
-	        self.ansDict[i[ind]] = list(i[ind_1:ind_1+70]) 
+
+        ansDf  = ansDf.set_index('รหัสประจำตัวสอบ')
+        idTemp = list(ansDf.index)
+        ansDf  = ansDf.to_numpy()
+
+        for v,id in enumerate(idTemp):
+            self.ansDict[id] = list(ansDf[v][ind_1-1:])
+
 
         return self.ansDict  
 
